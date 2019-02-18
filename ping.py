@@ -48,7 +48,7 @@ def connect(url, session, thr=False):
 
         except Exception as e:
             if "Missing dependencies for SOCKS support." in str(e) and not Force_quit:
-                print("Please check that tor is running")
+                print("[!] Please check that tor is running")
                 Force_quit = True
             else:
                 pass
