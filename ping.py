@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-import requests
-import optparse
-import time
+## NOTE: requires pysocks
+
+import requests, optparse, time
 from threading import *
 
 maxConnections = 4
@@ -48,8 +48,11 @@ def connect(url, session, thr=False):
 
         except Exception as e:
             if "Missing dependencies for SOCKS support." in str(e) and not Force_quit:
-                print("[!] Please check that tor is running")
+                print("[!] Please that pysocks is installed (pip install pysocks)")
                 Force_quit = True
+            # elif "SOCKSHTTPConnectionPool" in str(e) and not Force_quit:
+                # print("[!] Please check that tor is running")
+                # Force_quit = True
             else:
                 pass
             #        print(" -  Error on {}".format(url))
