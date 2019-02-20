@@ -4,6 +4,7 @@
 
 import requests, optparse, time
 from threading import *
+import re
 
 maxConnections = 4
 connection_lock = BoundedSemaphore(value=maxConnections)
@@ -22,9 +23,6 @@ def get_tor_session():
                        'https': 'socks5h://127.0.0.1:9050'}
     return session
 
-
-#session = get_tor_session()
-#print(session.get("http://httpbin.org/ip").text)
 
 def print_result():
     global Working
@@ -81,13 +79,23 @@ def main():
     fn = open(hostFile, 'r')
     schemas = ['http']
     session = get_tor_session()
+
+    checktor_resp = session.get("https://check.torproject.org").text
+    if "Congratulations. This browser is configured to use Tor." not in checktor_resp:
+        print("[!] Please make sure that TOR is running")
+        exit(0)
+
+    print("[i] Using a tor connection")
+    ip = re.search(r'<p>Your IP address appears to be:  <strong>(\d+.\d+.\d+.\d+)</strong></p>', checktor_resp).group(1)
+    print("[i] Your IP address appears to be {}".format(ip))
+
     lines = []
     for line in fn.readlines():
         lines.append(line.strip('\r').strip('\n'))
 
     uniqueLines = set(lines)
     To_test = len(uniqueLines)
-    print("[*] {} URL to test".format(To_test))
+    print("[i] {} URL to test".format(To_test))
     for ul in uniqueLines:
         for s in schemas:
             if Force_quit:
